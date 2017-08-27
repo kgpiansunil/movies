@@ -10,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.chi_square.movierating.R;
+import com.chi_square.movierating.data.MovieList;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
 public class RateMovieAdapter extends RecyclerView.Adapter<RateMovieAdapter.MyViewHolder> {
 
     private Context mContext;
-    private List<String> movieList;
+    private List<MovieList> movieList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
@@ -30,10 +31,16 @@ public class RateMovieAdapter extends RecyclerView.Adapter<RateMovieAdapter.MyVi
             super(view);
             title = (TextView) view.findViewById(R.id.card_rate_movie_title);
             ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+            ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                @Override
+                public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                    movieList.get(getPosition()).setRating(ratingBar.getRating());
+                }
+            });
         }
     }
 
-    public RateMovieAdapter(Context context, List<String> list ){
+    public RateMovieAdapter(Context context, List<MovieList> list ){
         this.mContext = context;
         this.movieList = list;
     }
@@ -48,12 +55,17 @@ public class RateMovieAdapter extends RecyclerView.Adapter<RateMovieAdapter.MyVi
 
     @Override
     public void onBindViewHolder(RateMovieAdapter.MyViewHolder holder, int position) {
-        String title = movieList.get(position);
+        String title = movieList.get(position).getName();
         holder.title.setText(title);
     }
 
     @Override
     public int getItemCount() {
         return movieList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 }

@@ -1,23 +1,30 @@
 package com.chi_square.movierating;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.chi_square.movierating.adapter.RateMovieAdapter;
+import com.chi_square.movierating.data.MovieList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class RateActivity extends AppCompatActivity {
-    List<String> movies;
+    List<MovieList> movies;
     RateMovieAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +45,7 @@ public class RateActivity extends AppCompatActivity {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         list.setLayoutManager(mLayoutManager);
 
-        movies = new ArrayList<String>();
+        movies = new ArrayList<MovieList>();
         adapter = new RateMovieAdapter(this,movies);
         list.setAdapter(adapter);
 
@@ -61,7 +68,8 @@ public class RateActivity extends AppCompatActivity {
         int j = i*10;
         int k = j+10;
         for(i=j;i<k;i++){
-            movies.add("Movie Name "+i);
+            MovieList a = new MovieList(i,"Movie Name "+i,0,1996,12234,R.drawable.icon_movie_thumbnail);
+            movies.add(a);
         }
         adapter.notifyDataSetChanged();
     }
@@ -78,8 +86,21 @@ public class RateActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.rate_menu_next:
-                Intent i = new Intent(getBaseContext(),GenreActivity.class);
-                startActivity(i);
+                int count = 0;
+                for(ListIterator<MovieList> movieIterator = movies.listIterator(); movieIterator.hasNext();){
+                    MovieList element = movieIterator.next();
+                    if(element.getRating() > 0){
+                        count++;
+                    }
+                }
+                Log.i("COUNT_RATING",""+count);
+                if(count >= 5){
+                    Intent i = new Intent(getBaseContext(),GenreActivity.class);
+                    startActivity(i);
+                }else{
+                    TextView error = (TextView) findViewById(R.id.error_rate);
+                    error.setText("Rate atleast 5 movies");
+                }
                 return true;
             default:
                 return true;
